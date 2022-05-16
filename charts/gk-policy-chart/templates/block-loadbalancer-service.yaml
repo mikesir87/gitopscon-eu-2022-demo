@@ -1,0 +1,22 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: blockloadbalancerservice
+  annotations:
+    description: >-
+      Disallows the creation of LoadBalancer Services
+spec:
+  crd:
+    spec:
+      names:
+        kind: BlockLoadBalancerService
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package block_loadbalancer_services
+
+        violation[{"msg": msg}] {
+          input.review.kind.kind == "Service"
+          input.review.object.spec.type == "LoadBalancer"
+          msg := sprintf("Services of type LoadBalancer are not permitted - %v", [input.review.object.metadata.name])
+        }

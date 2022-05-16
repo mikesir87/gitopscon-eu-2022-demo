@@ -1,0 +1,74 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: awesome
+spec:
+  commonName: awesome.local.mikesir87.training
+  dnsNames:
+    - awesome.local.mikesir87.training
+  secretName: awesome-tls-cert
+  issuerRef:
+    kind: ClusterIssuer
+    name: local-ca
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: awesome
+spec:
+  selector:
+    matchLabels:
+      app: awesome
+  template:
+    metadata:
+      labels:
+        app: awesome
+    spec:
+      containers:
+        - name: awesome
+          image: mikesir87/cats:1.0
+          ports:
+            - name: http
+              containerPort: 5000
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 50m
+            limits:
+              memory: 128Mi
+              cpu: 500m
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: awesome
+spec:
+  rules:
+    - host: awesome.local.mikesir87.training
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: awesome
+              port: 
+                number: 5000
+  tls:
+  - hosts:
+      - awesome.local.mikesir87.training
+    secretName: awesome-tls-cert  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: awesome
+spec:
+  selector:
+    app: awesome
+  ports:
+    - port: 5000
