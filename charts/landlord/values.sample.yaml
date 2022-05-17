@@ -1,0 +1,15 @@
+config:
+  tenantHostPrefix: tenants.local.mikesir87.training
+
+tenants:
+  team-awesome:
+    flux:
+      path: ./team-manifests/team-awesome
+  team-cats:
+    flux:
+      path: ./team-manifests/team-cats
+    domains:
+      - cats.local.mikesir87.training
+  team-dogs:
+    flux:
+      path: ./team-manifests/team-dogs

@@ -1,0 +1,27 @@
+{{- range $name, $tenant := .Values.tenants }}
+{{- $tenantConfig := $tenant | default dict -}}
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: AuthorizedDomainPolicy
+metadata:
+  name: {{ $name }}
+spec:
+  match:
+    namespaces:
+      - {{ $name }}
+    kinds:
+      - apiGroups: ["extensions", "networking.k8s.io"]
+        kinds: ["Ingress"]
+      - apiGroups: ["cert-manager.io"]
+        kinds: ["Certificate"]
+      - apiGroups: ["traefik.containo.us"]
+        kinds: ["IngressRouteTCP", "IngressRoute"]
+  parameters:
+    domains:
+      - "{{ $name }}.{{ $.Values.config.tenantHostPrefix }}"
+      - "*.{{ $name }}.{{ $.Values.config.tenantHostPrefix }}"
+      {{- if $tenantConfig.domains }}
+      {{- $tenantConfig.domains | toYaml | nindent 6 }}
+      {{- end }}
+---
+{{- end }}

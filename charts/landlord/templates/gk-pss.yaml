@@ -1,0 +1,53 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSSBaselinePrivilegedContainer
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  match:
+    namespaces:
+      {{- range $name, $tenant := .Values.tenants }}
+      - {{ $name }}
+      {{- end }}
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+      - apiGroups: ["apps"]
+        kinds: ["DaemonSet", "ReplicaSet", "Deployment", "StatefulSet"]
+      - apiGroups: ["batch"]
+        kinds: ["Job", "CronJob"]
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSSBaselineHostNamespace
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  match:
+    namespaces:
+      {{- range $name, $tenant := .Values.tenants }}
+      - {{ $name }}
+      {{- end }}
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+      - apiGroups: ["apps"]
+        kinds: ["DaemonSet", "ReplicaSet", "Deployment", "StatefulSet"]
+      - apiGroups: ["batch"]
+        kinds: ["Job", "CronJob"]
+---
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSSBaselineHostFilesystem
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  match:
+    namespaces:
+      {{- range $name, $tenant := .Values.tenants }}
+      - {{ $name }}
+      {{- end }}
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+      - apiGroups: ["apps"]
+        kinds: ["DaemonSet", "ReplicaSet", "Deployment", "StatefulSet"]
+      - apiGroups: ["batch"]
+        kinds: ["Job", "CronJob"]
